@@ -1,0 +1,263 @@
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class ShortestCommonAncestor {
+
+    private final Digraph G; // global var for digraph
+    private boolean[] visited;  // marked[v] = is there an s->v path?
+    private int[] edges; // edgeTo[v] = last edge on shortest s->v path
+    private int[] dist; // distTo[v] = length of shortest s->v path
+    private LinkedList<Integer> adj[]; // wack
+
+    // constructor takes a rooted DAG as argument
+    public ShortestCommonAncestor(Digraph G) {
+        // check if graph g satisfies properties (DAG)
+
+        if (G == null) throw new IllegalArgumentException("G cannot be null");
+        if (!isrooted(G) || iscyclic(G) || G.V() == 0) {
+            throw new IllegalArgumentException("G is not a DAG");
+        }
+
+        this.G = new Digraph(G);
+        visited = new boolean[G.V()];
+        dist = new int[G.V()];
+        edges = new int[G.V()];
+        adj = new LinkedList[G.V()];
+        for (int i = 0; i < G.V(); ++i)
+            adj[i] = new LinkedList();
+    }
+
+    // Test if G is rooted
+    private boolean isrooted(Digraph rooteddigraph) {
+        Digraph Gr = rooteddigraph.reverse();
+
+        for (int v = 0; v < rooteddigraph.V(); v++) {
+            if (rooteddigraph.outdegree(v) == 0) {
+                int count = 1;
+                boolean[] marked = new boolean[rooteddigraph.V()];
+                marked[v] = true;
+
+                Queue<Integer> visited = new LinkedList<Integer>();
+                visited.add(v);
+
+                while (!visited.isEmpty()) {
+                    int w = visited.remove();
+                    for (int i : Gr.adj(w)) {
+                        if (!marked[i]) {
+                            marked[i] = true;
+                            count++;
+                            visited.remove(i);
+                        }
+                    }
+                }
+                return (count == rooteddigraph.V());
+            }
+        }
+        return false;
+    }
+
+    // test if G is acyclic
+    private boolean iscyclic(Digraph cyclicdigraph) {
+
+        //  int[] cycle = new int[cyclicdigraph.V()];
+        Queue<Integer> explore = new LinkedList<Integer>();
+        Queue<Integer> order = new LinkedList<Integer>();
+
+        for (int v = 0; v < cyclicdigraph.V(); v++) {
+            if (cyclicdigraph.indegree(v) == 0) {
+                explore.add(v);
+                while (!explore.isEmpty()) {
+                    cyclicdigraph.adj(v);
+                }
+
+            }
+        }
+    }
+
+    // length of shortest ancestral path between v and w
+    public int length(int v, int w) {
+
+
+    }
+
+
+    // a shortest common ancestor of vertices v and w
+    public int ancestor(int v, int w) {
+
+    }
+
+    // helper method that finds the shortest length and ancestor of inputs v and w
+    private int[] findshortestint(int v, int w) {
+
+        int[] answers = new int[2];
+        int sLength = Integer.MAX_VALUE;
+        int sAncestor = -1;
+        int[][] vdata = bfs_int(G, v);
+        int[][] wdata = bfs_int(G, w);
+
+        hasPathTo(vdata[1]);
+        for (int i = 0; i < G.V(); ++i) {
+            if (hasPathTo(vdata[1]) && hasPathTo(wdata[1])) {
+                int len = bfdpV.distTo(i) + bfdpW.distTo(i);
+                if (len < sLength) {
+                    sLength = len;
+                    sAncestor = i;
+                }
+            }
+        }
+        answers[0] = sLength;
+        answers[1] = sAncestor;
+        return answers;
+    }
+
+    private boolean hasPathTo(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+
+        }
+    }
+
+    private int[][] bfs_int(Digraph G, int v) {
+
+
+        boolean[] checked = new boolean[G.V()];
+        int[] adjacents = new int[G.outdegree(v)];
+
+        LinkedList<Integer> queue = new LinkedList<Integer>();
+        checked[v] = true;
+        queue.add(v);
+        int[] distto = new int[G.V()];
+
+        while (!queue.isEmpty()) {
+            v = queue.poll();
+            int count = 0;
+            for (int n : adj[v]) {
+                if (!checked[n]) {
+                    checked[n] = true;
+                    adjacents[count] = n;
+                    distto[n] = distto[v] + 1;
+                    count++;
+                }
+            }
+        }
+        int[][] answers = new int[2][];
+        answers[0] = adjacents; // places all vertces adjacent to v in array
+        answers[1] = distto;
+        return answers;
+    }
+
+
+    // length of shortest ancestral path of vertex subsets A and B
+    public int lengthSubset(Iterable<Integer> subsetA, Iterable<Integer> subsetB) {
+
+    }
+
+    // a shortest common ancestor of vertex subsets A and B
+    public int ancestorSubset(Iterable<Integer> subsetA, Iterable<Integer> subsetB) {
+
+
+    }
+
+    // helper method that finds shortest length and ancestor of inputs v and w
+    private int[] findShortestSubset(Iterable<Integer> v, Iterable<Integer> w) {
+        if (v == null || w == null)
+            throw new IllegalArgumentException("Input cannot be null");
+        validate1(v);
+        validate1(w);
+
+
+        int[] answers = new int[2];
+        int sLength = Integer.MAX_VALUE;
+        int sAncestor = -1;
+
+        for (int i = 0; i < G.V(); ++i) {
+            if (bfdpV.hasPathTo(i) && bfdpW.hasPathTo(i)) {
+                int len = bfdpV.distTo(i) + bfdpW.distTo(i);
+                if (len < sLength) {
+                    sLength = len;
+                    sAncestor = i;
+                }
+            }
+        }
+        answers[0] = sLength;
+        answers[1] = sAncestor;
+        return answers;
+    }
+
+    private int[][] bfs_iterable(Digraph G, Iterable<Integer> verts) {
+        boolean[] checked = new boolean[G.V()];
+        int[] dist = new int[G.V()];
+        LinkedList<Integer> queue = new LinkedList<Integer>();
+
+        for (int v : verts) {
+            checked[v] = true;
+            dist[v] = 0;
+            queue.add(v);
+        }
+
+        while (!queue.isEmpty()) {
+            q = queue.poll();
+            int count = 0;
+            for (int n : adj[v]) {
+                if (!checked[n]) {
+                    checked[n] = true;
+                    adjacents[count] = n;
+                    distto[n] = distto[v] + 1;
+                    count++;
+                }
+            }
+        }
+        int[][] answers = new int[2][];
+        answers[0] = adjacents; // places all vertces adjacent to v in array
+        answers[1] = distto;
+        return answers;
+    }
+
+    // validate a single vertex in digraph
+    private void validate(int v) {
+        if (v < 0 || v >= G.V()) throw new IllegalArgumentException();
+    }
+
+    // calls validate to go through iterable
+    private void validate1(Iterable<Integer> v) {
+        int count = 0;
+        if (v == null) throw new IllegalArgumentException("Input is null");
+
+        for (Integer i : v) {
+            if (i == null) throw new IllegalArgumentException("null input");
+            count++;
+            validate(i);
+        }
+        if (count < 1) {
+            throw new IllegalArgumentException("no v in Iterable");
+        }
+    }
+
+    // unit testing (required)
+    public static void main(String[] args) {
+        In in = new In(args[0]);
+        Digraph G = new Digraph(in);
+        ShortestCommonAncestor sca = new ShortestCommonAncestor(G);
+        while (!StdIn.isEmpty()) {
+            int v = StdIn.readInt();
+            int w = StdIn.readInt();
+            int length = sca.length(v, w);
+            int ancestor = sca.ancestor(v, w);
+            StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
+        }
+    }
+
+}
+// failed code
+//      int count = 0;
+//    for (int i = 0; i < rooteddigraph.V(); i++) {
+//      if (rooteddigraph.indegree(i) == 0 && rooteddigraph.outdegree(i) == 0)
+//        return false; // for single node dag
+//  if (rooteddigraph.indegree(i) > 0 && rooteddigraph.outdegree(i) == 0) {
+//    count++;
+//}
+// }
+//return (count == 1);
